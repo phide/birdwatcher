@@ -1,42 +1,36 @@
-import os
-import time
-import picamera
 import RPi.GPIO as GPIO
-from datetime import datetime
+import picamera
+import time
 
-# Configure the motion sensor
 SENSOR_PIN = 26
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(SENSOR_PIN, GPIO.IN)
-
-# Configure the camera
-camera = picamera.PiCamera()
-camera.resolution = (1024, 768)
+LED_PIN = 6
 
 def capture_image():
-    # Generate a unique filename based on the current timestamp
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"bird_{timestamp}.jpg"
-    
-    # Capture and save the image
-    camera.capture(filename)
-    print(f"Image captured: {filename}")
+    with picamera.PiCamera() as camera:
+        camera.resolution = (1024, 768)
+        timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+        camera.capture(f"Bilder/birdwatcher/bird_{timestamp}.jpg")
+        print(f"Image captured: bird_{timestamp}.jpg")
 
-def on_motion_detected(channel):
+def motion_detected(channel):
     print("Motion detected!")
+    GPIO.output(LED_PIN, GPIO.HIGH)
+    time.sleep(1)
+    GPIO.output(LED_PIN, GPIO.LOW)
     capture_image()
 
-# Set up the motion detection callback
-GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=on_motion_detected)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(SENSOR_PIN, GPIO.IN)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=motion_detected)
 
 try:
     print("Bird watcher started. Press Ctrl+C to exit.")
     while True:
-        print(f"Motion sensor pin state: {GPIO.input(SENSOR_PIN)}")
         time.sleep(1)
-        
 except KeyboardInterrupt:
     print("Exiting...")
-    
 finally:
+    GPIO.output(LED_PIN, GPIO.LOW)
     GPIO.cleanup()
