@@ -15,14 +15,14 @@ def capture_image():
 def motion_detected(channel):
     print("Motion detected!")
     GPIO.output(LED_PIN, GPIO.HIGH)
-    time.sleep(1)
-    GPIO.output(LED_PIN, GPIO.LOW)
     capture_image()
+    GPIO.output(LED_PIN, GPIO.LOW)
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(SENSOR_PIN, GPIO.IN)
-GPIO.setup(LED_PIN, GPIO.OUT)
+GPIO.setwarnings(False)  # Disable warnings
 
+GPIO.setup(LED_PIN, GPIO.OUT)
+GPIO.setup(SENSOR_PIN, GPIO.IN)
 GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=motion_detected)
 
 try:
