@@ -25,6 +25,8 @@ you can also skip the launcher and start the birdwathcer directly
 
 
 ## setup
+![Setup](fritz/pcb.jpg)
 
+## example fotos
 ![Setup1](pictures/setup1.jpg)
 ![Setup2](pictures/setup2.jpg)
